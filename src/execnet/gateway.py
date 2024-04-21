@@ -31,6 +31,11 @@ class Gateway(gateway_base.BaseGateway):
         super().__init__(io=io, id=spec.id, _startcount=1)
         self.spec = spec
         self._initreceive()
+        if self.execmodel.backend == "main_thread_only":
+            # This will cause a deadlock if there is already a running
+            # remote_exec, so cache the result before there are any
+            # other remote_exec calls.
+            self._rinfo()
 
     @property
     def remoteaddress(self) -> str:
